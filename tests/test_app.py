@@ -1,9 +1,5 @@
 
-from app import app, init_db
-
-
-# Set up the database before the tests run
-init_db()
+from app import app
 
 
 def test_dashboard():
