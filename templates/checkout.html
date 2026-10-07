@@ -100,7 +100,13 @@
                 <td>{{ checkout.quantity }}</td>
                 <td>{{ checkout.checkout_date }}</td>
                 <td>{{ checkout.due_date }}</td>
-                <td>{{ checkout.status }}</td>
+                <td>
+                    {% if checkout.status == "Overdue" %}
+                    <span class="badge status-overdue">Overdue</span>
+                    {% else %}
+                    <span class="badge status-checkedout">Checked Out</span>
+                    {% endif %}
+                </td>
                 <td>
                     <form method="POST" action="{{ url_for('return_checkout', checkout_id=checkout.id) }}">
                         <button type="submit" class="btn btn-secondary btn-small">Return</button>

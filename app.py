@@ -8,6 +8,10 @@ CONDITIONS=["New","Good","Fair","Needs Repair","Out of Service"]
 LOCATIONS=["Library","IT Department","Media Lab","Science Building","Student Center","Other"]
 def db():
  c=sqlite3.connect(DB); c.row_factory=sqlite3.Row; return c
+def refresh_overdue_statuses():
+ c=db()
+ c.execute("UPDATE checkouts SET status=CASE WHEN due_date < ? THEN 'Overdue' ELSE 'Checked Out' END WHERE return_date IS NULL",(date.today().isoformat(),))
+ c.commit(); c.close()
 def init_db():
  c=db(); c.execute("""CREATE TABLE IF NOT EXISTS equipment(id INTEGER PRIMARY KEY AUTOINCREMENT,asset_tag TEXT UNIQUE NOT NULL,name TEXT NOT NULL,category TEXT NOT NULL,serial_number TEXT,quantity INTEGER NOT NULL,condition TEXT NOT NULL,location TEXT NOT NULL,notes TEXT)""")
  c.execute("""CREATE TABLE IF NOT EXISTS checkouts(id INTEGER PRIMARY KEY AUTOINCREMENT,equipment_id INTEGER NOT NULL,borrower_name TEXT NOT NULL,borrower_email TEXT NOT NULL,quantity INTEGER NOT NULL,checkout_date TEXT NOT NULL,due_date TEXT NOT NULL,return_date TEXT,status TEXT NOT NULL)""")
@@ -47,6 +51,7 @@ def delete(i):
  c=db(); c.execute("DELETE FROM equipment WHERE id=?",(i,)); c.commit(); c.close(); return redirect(url_for("equipment"))
 @app.route("/checkout", methods=["GET", "POST"])
 def checkout():
+ refresh_overdue_statuses()
  c=db()
  form_data=request.form if request.method=="POST" else {}
  if request.method=="POST":
