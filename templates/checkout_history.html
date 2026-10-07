@@ -1,0 +1,61 @@
+{% extends "base.html" %}
+
+{% block title %}Checkout History | CampusGear{% endblock %}
+
+{% block content %}
+<div class="page-heading">
+    <div>
+        <h2>Checkout History</h2>
+        <p>All equipment checkout and return records.</p>
+    </div>
+    <a href="{{ url_for('checkout') }}" class="btn btn-secondary">Back to Checkout</a>
+</div>
+
+<div class="table-card">
+    {% if history %}
+    <table class="equipment-table">
+        <thead>
+            <tr>
+                <th>Equipment</th>
+                <th>Asset Tag</th>
+                <th>Borrower</th>
+                <th>Email</th>
+                <th>Quantity</th>
+                <th>Checkout Date</th>
+                <th>Due Date</th>
+                <th>Return Date</th>
+                <th>Status</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for checkout in history %}
+            <tr>
+                <td>{{ checkout.equipment_name }}</td>
+                <td>{{ checkout.asset_tag or "-" }}</td>
+                <td>{{ checkout.borrower_name }}</td>
+                <td>{{ checkout.borrower_email }}</td>
+                <td>{{ checkout.quantity }}</td>
+                <td>{{ checkout.checkout_date }}</td>
+                <td>{{ checkout.due_date }}</td>
+                <td>{{ checkout.return_date or "Not returned" }}</td>
+                <td>
+                    {% if checkout.status == "Overdue" %}
+                    <span class="badge status-overdue">Overdue</span>
+                    {% elif checkout.status == "Checked Out" %}
+                    <span class="badge status-checkedout">Checked Out</span>
+                    {% else %}
+                    <span class="badge">Returned</span>
+                    {% endif %}
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+    <div class="empty-state">
+        <h3>No checkout records</h3>
+        <p>Checkout and return records will appear here.</p>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

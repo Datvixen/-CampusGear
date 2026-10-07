@@ -126,6 +126,13 @@ def return_checkout(checkout_id):
  c.close()
  flash("Equipment return recorded successfully.","success")
  return redirect(url_for("checkout"))
+@app.route("/checkout/history")
+def checkout_history():
+ refresh_overdue_statuses()
+ c=db()
+ history=c.execute("SELECT ch.*,COALESCE(e.name,'Removed Equipment') AS equipment_name,e.asset_tag FROM checkouts ch LEFT JOIN equipment e ON e.id=ch.equipment_id ORDER BY ch.checkout_date DESC,ch.id DESC").fetchall()
+ c.close()
+ return render_template("checkout_history.html",history=history)
 @app.route("/reports")
 def reports(): return render_template("todo.html",title="Users & Reports",owner="Team Member 3",tasks=["User management","Overdue equipment","Reports/activity","Additional tests"])
 if __name__=="__main__": init_db(); app.run(debug=True,host="0.0.0.0",port=5000)
