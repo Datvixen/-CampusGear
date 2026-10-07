@@ -1,1 +1,106 @@
-{% extends "base.html" %}{% block content %}<div class="heading"><div><label>OVERVIEW</label><h1>Dashboard</h1><p>Monitor your campus equipment inventory.</p></div><a class="btn primary" href="/equipment/add">+ Add Equipment</a></div><div class="stats">{% for label,value in [("Equipment Types",stats.types),("Total Units",stats.units),("Needs Repair",stats.repair),("Locations",stats.locations)] %}<article><p>{{label}}</p><strong>{{value}}</strong></article>{% endfor %}</div><div class="card"><h2>Recently added equipment</h2><table><tr><th>Asset</th><th>Category</th><th>Qty</th><th>Condition</th><th>Location</th></tr>{% for x in recent %}<tr><td><b>{{x.name}}</b><small>{{x.asset_tag}}</small></td><td>{{x.category}}</td><td>{{x.quantity}}</td><td><span class="badge">{{x.condition}}</span></td><td>{{x.location}}</td></tr>{% endfor %}</table></div>{% endblock %}
+{% extends "base.html" %}
+
+{% block title %}Dashboard | CampusGear{% endblock %}
+
+{% block content %}
+
+<div class="page-heading">
+    <div>
+        <h2>Dashboard</h2>
+        <p>Campus equipment inventory overview.</p>
+    </div>
+
+    <a href="{{ url_for('add_equipment') }}" class="btn btn-primary">
+        + Add Equipment
+    </a>
+</div>
+
+
+<!-- Dashboard Statistics -->
+
+<div class="dashboard-grid">
+
+    <div class="stat-card">
+        <h3>Total Equipment</h3>
+        <p class="stat-number">{{ stats.total }}</p>
+        <span>Items in inventory</span>
+    </div>
+
+    <div class="stat-card">
+        <h3>Available</h3>
+        <p class="stat-number">{{ stats.available }}</p>
+        <span>Ready for checkout</span>
+    </div>
+
+    <div class="stat-card">
+        <h3>Checked Out</h3>
+        <p class="stat-number">{{ stats.checked_out }}</p>
+        <span>Currently borrowed</span>
+    </div>
+
+    <div class="stat-card">
+        <h3>Needs Attention</h3>
+        <p class="stat-number">{{ stats.needs_attention }}</p>
+        <span>Equipment requiring review</span>
+    </div>
+
+</div>
+
+
+<!-- Quick Actions -->
+
+<div class="section-card">
+
+    <div class="section-heading">
+        <h3>Quick Actions</h3>
+        <p>Manage the CampusGear inventory.</p>
+    </div>
+
+    <div class="quick-actions">
+
+        <a href="{{ url_for('equipment') }}"
+           class="action-card">
+
+            <h4>View Equipment</h4>
+            <p>Search and view the campus equipment inventory.</p>
+
+        </a>
+
+        <a href="{{ url_for('add_equipment') }}"
+           class="action-card">
+
+            <h4>Add Equipment</h4>
+            <p>Add a new item to the equipment inventory.</p>
+
+        </a>
+
+        <a href="{{ url_for('checkout') }}"
+           class="action-card">
+
+            <h4>Checkout / Return</h4>
+            <p>Manage borrowed and returned equipment.</p>
+
+        </a>
+
+    </div>
+
+</div>
+
+
+<!-- Project Information -->
+
+<div class="section-card">
+
+    <div class="section-heading">
+        <h3>CampusGear</h3>
+    </div>
+
+    <p>
+        CampusGear helps campus staff organize and track equipment
+        such as laptops, tablets, cameras, projectors, chargers,
+        and other school equipment.
+    </p>
+
+</div>
+
+{% endblock %}
