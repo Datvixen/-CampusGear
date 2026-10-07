@@ -1,1 +1,147 @@
-{% extends "base.html" %}{% block content %}<div class="heading"><div><label>INVENTORY</label><h1>{{"Edit" if item else "Add"}} Equipment</h1><p>Enter the campus asset information.</p></div></div><div class="card form"><form method="post" class="grid"><label>Asset Tag<input required name="asset_tag" value="{{item.asset_tag if item else ''}}" placeholder="CG-1006"></label><label>Equipment Name<input required name="name" value="{{item.name if item else ''}}"></label><label>Category<select name="category">{% for x in categories %}<option {% if item and item.category==x %}selected{% endif %}>{{x}}</option>{% endfor %}</select></label><label>Serial Number<input name="serial_number" value="{{item.serial_number if item else ''}}"></label><label>Quantity<input type="number" min="1" required name="quantity" value="{{item.quantity if item else 1}}"></label><label>Condition<select name="condition">{% for x in conditions %}<option {% if item and item.condition==x %}selected{% endif %}>{{x}}</option>{% endfor %}</select></label><label>Location<select name="location">{% for x in locations %}<option {% if item and item.location==x %}selected{% endif %}>{{x}}</option>{% endfor %}</select></label><label class="wide">Notes<textarea name="notes">{{item.notes if item else ''}}</textarea></label><div class="wide"><button class="btn primary">Save Equipment</button></div></form></div>{% endblock %}
+{% extends "base.html" %}
+
+{% block title %}
+    {{ title }} | CampusGear
+{% endblock %}
+
+{% block content %}
+
+<div class="page-heading">
+    <div>
+        <h2>{{ title }}</h2>
+        <p>Enter the equipment information below.</p>
+    </div>
+
+    <a href="{{ url_for('equipment') }}" class="btn btn-secondary">
+        Back to Equipment
+    </a>
+</div>
+
+<div class="form-card">
+
+    <form method="POST">
+
+        <div class="form-grid">
+
+            <div class="form-group">
+                <label for="asset_tag">Asset ID</label>
+                <input
+                    type="text"
+                    id="asset_tag"
+                    name="asset_tag"
+                    value="{{ item.asset_tag if item else '' }}"
+                    placeholder="Example: LAP-001"
+                    required
+                >
+            </div>
+
+            <div class="form-group">
+                <label for="name">Equipment Name</label>
+                <input
+                    type="text"
+                    id="name"
+                    name="name"
+                    value="{{ item.name if item else '' }}"
+                    placeholder="Example: Dell Laptop"
+                    required
+                >
+            </div>
+
+            <div class="form-group">
+                <label for="category">Category</label>
+
+                <select id="category" name="category" required>
+                    <option value="">Select Category</option>
+
+                    {% for category in categories %}
+                    <option
+                        value="{{ category }}"
+                        {% if item and item.category == category %}
+                            selected
+                        {% endif %}
+                    >
+                        {{ category }}
+                    </option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="serial_number">Serial Number</label>
+                <input
+                    type="text"
+                    id="serial_number"
+                    name="serial_number"
+                    value="{{ item.serial_number if item else '' }}"
+                    placeholder="Enter serial number"
+                    required
+                >
+            </div>
+
+            <div class="form-group">
+                <label for="condition">Condition</label>
+
+                <select id="condition" name="condition" required>
+                    <option value="">Select Condition</option>
+
+                    {% for condition in conditions %}
+                    <option
+                        value="{{ condition }}"
+                        {% if item and item.condition == condition %}
+                            selected
+                        {% endif %}
+                    >
+                        {{ condition }}
+                    </option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="location">Location</label>
+
+                <select id="location" name="location" required>
+                    <option value="">Select Location</option>
+
+                    {% for location in locations %}
+                    <option
+                        value="{{ location }}"
+                        {% if item and item.location == location %}
+                            selected
+                        {% endif %}
+                    >
+                        {{ location }}
+                    </option>
+                    {% endfor %}
+                </select>
+            </div>
+
+        </div>
+
+        <div class="form-group full-width">
+            <label for="notes">Notes</label>
+
+            <textarea
+                id="notes"
+                name="notes"
+                rows="4"
+                placeholder="Enter any additional information about this equipment."
+            >{{ item.notes if item else '' }}</textarea>
+        </div>
+
+        <div class="form-actions">
+            <button type="submit" class="btn btn-primary">
+                Save Equipment
+            </button>
+
+            <a href="{{ url_for('equipment') }}"
+               class="btn btn-secondary">
+                Cancel
+            </a>
+        </div>
+
+    </form>
+
+</div>
+
+{% endblock %}
