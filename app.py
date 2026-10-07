@@ -1,6 +1,7 @@
 from flask import Flask, render_template, request, redirect, url_for, flash
 import sqlite3
 from pathlib import Path
+from datetime import date
 app=Flask(__name__); app.secret_key="campusgear-dev"; DB=Path(__file__).with_name("campusgear.db")
 CATEGORIES=["Laptop","Tablet","Camera","Projector","Charger","Lab Equipment","Other"]
 CONDITIONS=["New","Good","Fair","Needs Repair","Out of Service"]
@@ -44,8 +45,56 @@ def edit(i):
 @app.route("/equipment/<int:i>/delete",methods=["POST"])
 def delete(i):
  c=db(); c.execute("DELETE FROM equipment WHERE id=?",(i,)); c.commit(); c.close(); return redirect(url_for("equipment"))
-@app.route("/checkout")
-def checkout(): return render_template("todo.html",title="Checkout & Returns",owner="Team Member 2",tasks=["Checkout form","Borrower and due dates","Return workflow","Checkout history"])
+@app.route("/checkout", methods=["GET", "POST"])
+def checkout():
+ c=db()
+ form_data=request.form if request.method=="POST" else {}
+ if request.method=="POST":
+  borrower_name=request.form.get("borrower_name","").strip()
+  borrower_email=request.form.get("borrower_email","").strip()
+  raw_equipment_id=request.form.get("equipment_id","")
+  raw_quantity=request.form.get("quantity","")
+  checkout_date=request.form.get("checkout_date","")
+  due_date=request.form.get("due_date","")
+  error=None
+  try: equipment_id=int(raw_equipment_id)
+  except (TypeError,ValueError): equipment_id=None
+  try: quantity=int(raw_quantity)
+  except (TypeError,ValueError): quantity=None
+  try: checkout_day=date.fromisoformat(checkout_date)
+  except ValueError: checkout_day=None
+  try: due_day=date.fromisoformat(due_date)
+  except ValueError: due_day=None
+  if not borrower_name: error="Borrower name is required."
+  elif not borrower_email: error="Borrower email is required."
+  elif quantity is None or quantity < 1: error="Quantity must be at least 1."
+  elif checkout_day is None: error="Enter a valid checkout date."
+  elif due_day is None: error="Enter a valid due date."
+  elif due_day < checkout_day: error="Due date cannot be before the checkout date."
+  elif equipment_id is None: error="Select a valid equipment item."
+  if error:
+   flash(error,"danger")
+  else:
+   c.execute("BEGIN IMMEDIATE")
+   item=c.execute("SELECT quantity FROM equipment WHERE id=?",(equipment_id,)).fetchone()
+   if item is None:
+    c.rollback()
+    flash("The selected equipment could not be found.","danger")
+   else:
+    checked_out=c.execute("SELECT COALESCE(SUM(quantity),0) FROM checkouts WHERE equipment_id=? AND return_date IS NULL",(equipment_id,)).fetchone()[0]
+    available=item["quantity"]-checked_out
+    if quantity > available:
+     c.rollback()
+     flash(f"Only {max(0,available)} unit(s) are currently available.","danger")
+    else:
+     c.execute("INSERT INTO checkouts(equipment_id,borrower_name,borrower_email,quantity,checkout_date,due_date,return_date,status) VALUES(?,?,?,?,?,?,NULL,?)",(equipment_id,borrower_name,borrower_email,quantity,checkout_date,due_date,"Checked Out"))
+     c.commit()
+     c.close()
+     flash("Equipment checked out successfully.","success")
+     return redirect(url_for("checkout"))
+ items=c.execute("SELECT e.id,e.asset_tag,e.name,e.quantity-COALESCE((SELECT SUM(ch.quantity) FROM checkouts ch WHERE ch.equipment_id=e.id AND ch.return_date IS NULL),0) AS available_quantity FROM equipment e ORDER BY e.name").fetchall()
+ c.close()
+ return render_template("checkout.html",items=items,form_data=form_data)
 @app.route("/reports")
 def reports(): return render_template("todo.html",title="Users & Reports",owner="Team Member 3",tasks=["User management","Overdue equipment","Reports/activity","Additional tests"])
 if __name__=="__main__": init_db(); app.run(debug=True,host="0.0.0.0",port=5000)
