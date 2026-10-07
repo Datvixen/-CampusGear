@@ -1,1 +1,241 @@
-{% extends "base.html" %}{% block content %}<div class="heading"><div><label>INVENTORY</label><h1>Equipment</h1><p>Search, filter, and manage campus assets.</p></div><a class="btn primary" href="/equipment/add">+ Add Equipment</a></div><form class="filters"><input name="search" value="{{search}}" placeholder="Search name, asset tag, serial"><select name="category"><option value="">All Categories</option>{% for x in categories %}<option {% if category==x %}selected{% endif %}>{{x}}</option>{% endfor %}</select><select name="condition"><option value="">All Conditions</option>{% for x in conditions %}<option {% if condition==x %}selected{% endif %}>{{x}}</option>{% endfor %}</select><select name="location"><option value="">All Locations</option>{% for x in locations %}<option {% if location==x %}selected{% endif %}>{{x}}</option>{% endfor %}</select><button class="btn">Filter</button></form><div class="card"><table><tr><th>Equipment</th><th>Category</th><th>Qty</th><th>Condition</th><th>Location</th><th>Actions</th></tr>{% for x in items %}<tr><td><b>{{x.name}}</b><small>{{x.asset_tag}}</small></td><td>{{x.category}}</td><td>{{x.quantity}}</td><td><span class="badge">{{x.condition}}</span></td><td>{{x.location}}</td><td><a href="/equipment/{{x.id}}/edit">Edit</a> <form class="inline" method="post" action="/equipment/{{x.id}}/delete"><button class="delete">Delete</button></form></td></tr>{% endfor %}</table></div>{% endblock %}
+{% extends "base.html" %}
+
+{% block title %}Equipment | CampusGear{% endblock %}
+
+{% block content %}
+
+<div class="page-heading">
+    <div>
+        <h2>Equipment Inventory</h2>
+        <p>Search, filter, and view campus equipment.</p>
+    </div>
+
+    <a href="{{ url_for('add_equipment') }}" class="btn btn-primary">
+        + Add Equipment
+    </a>
+</div>
+
+
+<!-- Search and Filters -->
+
+<div class="filter-card">
+
+    <form method="GET" action="{{ url_for('equipment') }}" class="filter-form">
+
+        <div class="form-group">
+            <label for="search">Search Equipment</label>
+
+            <input
+                type="text"
+                id="search"
+                name="search"
+                placeholder="Name, asset ID, or serial number"
+                value="{{ request.args.get('search', '') }}"
+            >
+        </div>
+
+
+        <div class="form-group">
+            <label for="category">Category</label>
+
+            <select name="category" id="category">
+                <option value="">All Categories</option>
+
+                {% for category in categories %}
+                <option value="{{ category }}"
+                    {% if request.args.get('category') == category %}
+                        selected
+                    {% endif %}
+                >
+                    {{ category }}
+                </option>
+                {% endfor %}
+            </select>
+        </div>
+
+
+        <div class="form-group">
+            <label for="condition">Condition</label>
+
+            <select name="condition" id="condition">
+                <option value="">All Conditions</option>
+
+                {% for condition in conditions %}
+                <option value="{{ condition }}"
+                    {% if request.args.get('condition') == condition %}
+                        selected
+                    {% endif %}
+                >
+                    {{ condition }}
+                </option>
+                {% endfor %}
+            </select>
+        </div>
+
+
+        <div class="form-group">
+            <label for="location">Location</label>
+
+            <select name="location" id="location">
+                <option value="">All Locations</option>
+
+                {% for location in locations %}
+                <option value="{{ location }}"
+                    {% if request.args.get('location') == location %}
+                        selected
+                    {% endif %}
+                >
+                    {{ location }}
+                </option>
+                {% endfor %}
+            </select>
+        </div>
+
+
+        <div class="filter-buttons">
+            <button type="submit" class="btn btn-primary">
+                Search
+            </button>
+
+            <a href="{{ url_for('equipment') }}" class="btn btn-secondary">
+                Clear
+            </a>
+        </div>
+
+    </form>
+
+</div>
+
+
+<!-- Equipment Table -->
+
+<div class="table-card">
+
+    {% if items %}
+
+    <table class="equipment-table">
+
+        <thead>
+            <tr>
+                <th>Asset ID</th>
+                <th>Equipment</th>
+                <th>Category</th>
+                <th>Serial Number</th>
+                <th>Condition</th>
+                <th>Location</th>
+                <th>Status</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+
+        <tbody>
+
+            {% for item in items %}
+
+            <tr>
+
+                <td>{{ item.asset_tag }}</td>
+
+                <td>
+                    <strong>{{ item.name }}</strong>
+                </td>
+
+                <td>{{ item.category }}</td>
+
+                <td>{{ item.serial_number }}</td>
+
+                <td>
+                    {% if item.condition == "Excellent" %}
+                        <span class="badge condition-excellent">
+                            Excellent
+                        </span>
+
+                    {% elif item.condition == "Good" %}
+                        <span class="badge condition-good">
+                            Good
+                        </span>
+
+                    {% elif item.condition == "Fair" %}
+                        <span class="badge condition-fair">
+                            Fair
+                        </span>
+
+                    {% else %}
+                        <span class="badge condition-repair">
+                            {{ item.condition }}
+                        </span>
+                    {% endif %}
+                </td>
+
+                <td>{{ item.location }}</td>
+
+                <td>
+                    {% if item.status == "Available" %}
+                        <span class="badge status-available">
+                            Available
+                        </span>
+
+                    {% elif item.status == "Checked Out" %}
+                        <span class="badge status-checkedout">
+                            Checked Out
+                        </span>
+
+                    {% elif item.status == "Overdue" %}
+                        <span class="badge status-overdue">
+                            Overdue
+                        </span>
+
+                    {% else %}
+                        <span class="badge">
+                            {{ item.status }}
+                        </span>
+                    {% endif %}
+                </td>
+
+                <td class="actions">
+
+                    <a href="{{ url_for('edit_equipment', item_id=item.id) }}"
+                       class="btn btn-small">
+                        Edit
+                    </a>
+
+                    <form
+                        method="POST"
+                        action="{{ url_for('delete_equipment', item_id=item.id) }}"
+                        class="delete-form"
+                    >
+                        <button
+                            type="submit"
+                            class="btn btn-danger btn-small"
+                            onclick="return confirm('Are you sure you want to delete this equipment?');"
+                        >
+                            Delete
+                        </button>
+                    </form>
+
+                </td>
+
+            </tr>
+
+            {% endfor %}
+
+        </tbody>
+
+    </table>
+
+    {% else %}
+
+        <div class="empty-state">
+            <h3>No equipment found</h3>
+            <p>Try changing your search or filter options.</p>
+
+            <a href="{{ url_for('equipment') }}" class="btn btn-primary">
+                Clear Search
+            </a>
+        </div>
+
+    {% endif %}
+
+</div>
+
+{% endblock %}
