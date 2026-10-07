@@ -121,9 +121,12 @@
                 <th>Equipment</th>
                 <th>Category</th>
                 <th>Serial Number</th>
+                <th>Total Quantity</th>
+                <th>Checked Out</th>
+                <th>Available</th>
                 <th>Condition</th>
                 <th>Location</th>
-                <th>Status</th>
+                <th>Availability Status</th>
                 <th>Actions</th>
             </tr>
         </thead>
@@ -143,6 +146,12 @@
                 <td>{{ item.category }}</td>
 
                 <td>{{ item.serial_number }}</td>
+
+                <td>{{ item.quantity }}</td>
+
+                <td>{{ item.checked_out_quantity }}</td>
+
+                <td>{{ item.available_quantity }}</td>
 
                 <td>
                     {% if item.condition == "Excellent" %}
@@ -170,38 +179,38 @@
                 <td>{{ item.location }}</td>
 
                 <td>
-                    {% if item.status == "Available" %}
+                    {% if item.availability_status == "Available" %}
                         <span class="badge status-available">
                             Available
                         </span>
 
-                    {% elif item.status == "Checked Out" %}
+                    {% elif item.availability_status == "Partially Checked Out" %}
+                        <span class="badge status-partial">
+                            Partially Checked Out
+                        </span>
+
+                    {% elif item.availability_status == "Checked Out" %}
                         <span class="badge status-checkedout">
                             Checked Out
                         </span>
 
-                    {% elif item.status == "Overdue" %}
-                        <span class="badge status-overdue">
-                            Overdue
-                        </span>
-
                     {% else %}
-                        <span class="badge">
-                            {{ item.status }}
+                        <span class="badge condition-repair">
+                            Out of Service
                         </span>
                     {% endif %}
                 </td>
 
                 <td class="actions">
 
-                    <a href="{{ url_for('edit_equipment', item_id=item.id) }}"
+                    <a href="{{ url_for('edit', i=item.id) }}"
                        class="btn btn-small">
                         Edit
                     </a>
 
                     <form
                         method="POST"
-                        action="{{ url_for('delete_equipment', item_id=item.id) }}"
+                        action="{{ url_for('delete', i=item.id) }}"
                         class="delete-form"
                     >
                         <button

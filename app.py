@@ -29,12 +29,12 @@ def dashboard():
  return render_template("dashboard.html",stats=stats,recent=recent)
 @app.route("/equipment")
 def equipment():
- s=request.args.get("search","").strip(); cat=request.args.get("category",""); cond=request.args.get("condition",""); loc=request.args.get("location",""); sql="SELECT * FROM equipment WHERE 1=1"; p=[]
- if s: sql+=" AND (name LIKE ? OR asset_tag LIKE ? OR serial_number LIKE ?)"; q=f"%{s}%"; p += [q,q,q]
- if cat: sql+=" AND category=?"; p.append(cat)
- if cond: sql+=" AND condition=?"; p.append(cond)
- if loc: sql+=" AND location=?"; p.append(loc)
- c=db(); items=c.execute(sql+" ORDER BY name",p).fetchall(); c.close(); return render_template("equipment.html",items=items,categories=CATEGORIES,conditions=CONDITIONS,locations=LOCATIONS,search=s,category=cat,condition=cond,location=loc)
+ s=request.args.get("search","").strip(); cat=request.args.get("category",""); cond=request.args.get("condition",""); loc=request.args.get("location",""); sql="SELECT e.*,COALESCE(active.checked_out_quantity,0) AS checked_out_quantity,MAX(0,e.quantity-COALESCE(active.checked_out_quantity,0)) AS available_quantity,CASE WHEN e.condition='Out of Service' THEN 'Out of Service' WHEN COALESCE(active.checked_out_quantity,0)=0 AND e.quantity>0 THEN 'Available' WHEN MAX(0,e.quantity-COALESCE(active.checked_out_quantity,0))>0 THEN 'Partially Checked Out' ELSE 'Checked Out' END AS availability_status FROM equipment e LEFT JOIN (SELECT equipment_id,SUM(quantity) AS checked_out_quantity FROM checkouts WHERE return_date IS NULL GROUP BY equipment_id) active ON active.equipment_id=e.id WHERE 1=1"; p=[]
+ if s: sql+=" AND (e.name LIKE ? OR e.asset_tag LIKE ? OR e.serial_number LIKE ?)"; q=f"%{s}%"; p += [q,q,q]
+ if cat: sql+=" AND e.category=?"; p.append(cat)
+ if cond: sql+=" AND e.condition=?"; p.append(cond)
+ if loc: sql+=" AND e.location=?"; p.append(loc)
+ c=db(); items=c.execute(sql+" ORDER BY e.name",p).fetchall(); c.close(); return render_template("equipment.html",items=items,categories=CATEGORIES,conditions=CONDITIONS,locations=LOCATIONS,search=s,category=cat,condition=cond,location=loc)
 @app.route("/equipment/add",methods=["GET","POST"])
 def add_equipment():
  if request.method=="POST": return save()
