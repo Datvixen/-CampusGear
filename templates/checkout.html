@@ -68,4 +68,53 @@
         </div>
     </form>
 </div>
+
+<div class="section-heading">
+    <h3>Active Checkouts</h3>
+    <p>Equipment that has not yet been returned.</p>
+</div>
+
+<div class="table-card">
+    {% if active_checkouts %}
+    <table class="equipment-table">
+        <thead>
+            <tr>
+                <th>Equipment</th>
+                <th>Asset Tag</th>
+                <th>Borrower</th>
+                <th>Email</th>
+                <th>Quantity</th>
+                <th>Checkout Date</th>
+                <th>Due Date</th>
+                <th>Status</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for checkout in active_checkouts %}
+            <tr>
+                <td>{{ checkout.equipment_name or "Equipment no longer in inventory" }}</td>
+                <td>{{ checkout.asset_tag or "-" }}</td>
+                <td>{{ checkout.borrower_name }}</td>
+                <td>{{ checkout.borrower_email }}</td>
+                <td>{{ checkout.quantity }}</td>
+                <td>{{ checkout.checkout_date }}</td>
+                <td>{{ checkout.due_date }}</td>
+                <td>{{ checkout.status }}</td>
+                <td>
+                    <form method="POST" action="{{ url_for('return_checkout', checkout_id=checkout.id) }}">
+                        <button type="submit" class="btn btn-secondary btn-small">Return</button>
+                    </form>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+    <div class="empty-state">
+        <h3>No active checkouts</h3>
+        <p>All checked-out equipment has been returned.</p>
+    </div>
+    {% endif %}
+</div>
 {% endblock %}
