@@ -20,7 +20,13 @@ def init_db():
  c.commit(); c.close()
 @app.route("/")
 def dashboard():
- c=db(); stats={"types":c.execute("SELECT COUNT(*) FROM equipment").fetchone()[0],"units":c.execute("SELECT COALESCE(SUM(quantity),0) FROM equipment").fetchone()[0],"repair":c.execute("SELECT COUNT(*) FROM equipment WHERE condition='Needs Repair'").fetchone()[0],"locations":c.execute("SELECT COUNT(DISTINCT location) FROM equipment").fetchone()[0]}; recent=c.execute("SELECT * FROM equipment ORDER BY id DESC LIMIT 5").fetchall(); c.close(); return render_template("dashboard.html",stats=stats,recent=recent)
+ refresh_overdue_statuses()
+ c=db()
+ totals=c.execute("SELECT COALESCE((SELECT SUM(quantity) FROM equipment),0) AS total_units,COALESCE((SELECT SUM(quantity) FROM checkouts WHERE return_date IS NULL),0) AS checked_out,COALESCE((SELECT SUM(quantity) FROM checkouts WHERE return_date IS NULL AND status='Overdue'),0) AS overdue").fetchone()
+ stats={"total_units":totals["total_units"],"available":max(0,totals["total_units"]-totals["checked_out"]),"checked_out":totals["checked_out"],"overdue":totals["overdue"]}
+ recent=c.execute("SELECT * FROM equipment ORDER BY id DESC LIMIT 5").fetchall()
+ c.close()
+ return render_template("dashboard.html",stats=stats,recent=recent)
 @app.route("/equipment")
 def equipment():
  s=request.args.get("search","").strip(); cat=request.args.get("category",""); cond=request.args.get("condition",""); loc=request.args.get("location",""); sql="SELECT * FROM equipment WHERE 1=1"; p=[]
