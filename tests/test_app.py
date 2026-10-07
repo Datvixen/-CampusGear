@@ -1,7 +1,8 @@
+
 import os
 import sys
 
-# Allow tests to import app.py from the project folder
+# Allows the test file to import app.py
 sys.path.insert(
     0,
     os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
@@ -16,7 +17,7 @@ def setup_module():
 
 
 def test_dashboard_loads():
-    """Dashboard should load successfully."""
+    """Test that the dashboard loads correctly."""
     client = app.test_client()
 
     response = client.get("/")
@@ -26,7 +27,7 @@ def test_dashboard_loads():
 
 
 def test_equipment_page_loads():
-    """Equipment inventory page should load successfully."""
+    """Test that the equipment page loads correctly."""
     client = app.test_client()
 
     response = client.get("/equipment")
@@ -36,7 +37,7 @@ def test_equipment_page_loads():
 
 
 def test_search_equipment():
-    """Search should return matching equipment."""
+    """Test equipment search."""
     client = app.test_client()
 
     response = client.get("/equipment?search=Dell")
@@ -46,7 +47,7 @@ def test_search_equipment():
 
 
 def test_category_filter():
-    """Category filter should load filtered results."""
+    """Test the category filter."""
     client = app.test_client()
 
     response = client.get("/equipment?category=Laptop")
@@ -55,7 +56,7 @@ def test_category_filter():
 
 
 def test_condition_filter():
-    """Condition filter should work without an error."""
+    """Test the condition filter."""
     client = app.test_client()
 
     response = client.get("/equipment?condition=Excellent")
@@ -64,7 +65,7 @@ def test_condition_filter():
 
 
 def test_location_filter():
-    """Location filter should work without an error."""
+    """Test the location filter."""
     client = app.test_client()
 
     response = client.get("/equipment?location=Library")
@@ -73,7 +74,7 @@ def test_location_filter():
 
 
 def test_add_equipment_page_loads():
-    """Add Equipment form should load."""
+    """Test that the Add Equipment form loads."""
     client = app.test_client()
 
     response = client.get("/equipment/add")
@@ -83,7 +84,7 @@ def test_add_equipment_page_loads():
 
 
 def test_invalid_page_returns_404():
-    """An invalid URL should return a 404 error."""
+    """Test that an invalid page returns a 404 error."""
     client = app.test_client()
 
     response = client.get("/this-page-does-not-exist")
