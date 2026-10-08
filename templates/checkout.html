@@ -1,0 +1,127 @@
+{% extends "base.html" %}
+
+{% block title %}Checkout Equipment | CampusGear{% endblock %}
+
+{% block content %}
+<div class="page-heading">
+    <div>
+        <h2>Checkout Equipment</h2>
+        <p>Record equipment borrowed by a campus community member.</p>
+    </div>
+    <a href="{{ url_for('checkout_history') }}" class="btn btn-secondary">Checkout History</a>
+</div>
+
+<div class="form-card">
+    <form method="POST" action="{{ url_for('checkout') }}">
+        <div class="form-grid">
+            <div class="form-group">
+                <label for="equipment_id">Equipment</label>
+                <select id="equipment_id" name="equipment_id" required>
+                    <option value="">Select equipment</option>
+                    {% for item in items %}
+                    <option value="{{ item.id }}"
+                        {% if form_data.get('equipment_id') == item.id|string %}selected{% endif %}
+                        {% if item.available_quantity < 1 %}disabled{% endif %}>
+                        {{ item.asset_tag }} - {{ item.name }}
+                        {% if item.available_quantity > 0 %}
+                            ({{ item.available_quantity }} available)
+                        {% else %}
+                            (Unavailable)
+                        {% endif %}
+                    </option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="quantity">Quantity</label>
+                <input type="number" id="quantity" name="quantity" min="1" step="1"
+                       value="{{ form_data.get('quantity', '') }}" required>
+            </div>
+
+            <div class="form-group">
+                <label for="borrower_name">Borrower name</label>
+                <input type="text" id="borrower_name" name="borrower_name"
+                       value="{{ form_data.get('borrower_name', '') }}" required>
+            </div>
+
+            <div class="form-group">
+                <label for="borrower_email">Borrower email</label>
+                <input type="email" id="borrower_email" name="borrower_email"
+                       value="{{ form_data.get('borrower_email', '') }}" required>
+            </div>
+
+            <div class="form-group">
+                <label for="checkout_date">Checkout date</label>
+                <input type="date" id="checkout_date" name="checkout_date"
+                       value="{{ form_data.get('checkout_date', '') }}" required>
+            </div>
+
+            <div class="form-group">
+                <label for="due_date">Due date</label>
+                <input type="date" id="due_date" name="due_date"
+                       value="{{ form_data.get('due_date', '') }}" required>
+            </div>
+        </div>
+
+        <div class="form-actions">
+            <button type="submit" class="btn btn-primary">Complete Checkout</button>
+        </div>
+    </form>
+</div>
+
+<div class="section-heading">
+    <h3>Active Checkouts</h3>
+    <p>Equipment that has not yet been returned.</p>
+</div>
+
+<div class="table-card">
+    {% if active_checkouts %}
+    <table class="equipment-table">
+        <thead>
+            <tr>
+                <th>Equipment</th>
+                <th>Asset Tag</th>
+                <th>Borrower</th>
+                <th>Email</th>
+                <th>Quantity</th>
+                <th>Checkout Date</th>
+                <th>Due Date</th>
+                <th>Status</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for checkout in active_checkouts %}
+            <tr>
+                <td>{{ checkout.equipment_name or "Equipment no longer in inventory" }}</td>
+                <td>{{ checkout.asset_tag or "-" }}</td>
+                <td>{{ checkout.borrower_name }}</td>
+                <td>{{ checkout.borrower_email }}</td>
+                <td>{{ checkout.quantity }}</td>
+                <td>{{ checkout.checkout_date }}</td>
+                <td>{{ checkout.due_date }}</td>
+                <td>
+                    {% if checkout.status == "Overdue" %}
+                    <span class="badge status-overdue">Overdue</span>
+                    {% else %}
+                    <span class="badge status-checkedout">Checked Out</span>
+                    {% endif %}
+                </td>
+                <td>
+                    <form method="POST" action="{{ url_for('return_checkout', checkout_id=checkout.id) }}">
+                        <button type="submit" class="btn btn-secondary btn-small">Return</button>
+                    </form>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+    <div class="empty-state">
+        <h3>No active checkouts</h3>
+        <p>All checked-out equipment has been returned.</p>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}
