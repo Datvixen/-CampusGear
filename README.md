@@ -62,11 +62,10 @@ http://127.0.0.1:5000
 
 If port 5000 is already being used, run:
 
-python3 -m flask --app app run --debug --port 5001
-
+python3 -m flask --app app run --debug --port 5002
 Then open:
 
-http://127.0.0.1:5001
+http://127.0.0.1:5002
 
 ## Technology
 
