@@ -121,9 +121,12 @@
                 <th>Equipment</th>
                 <th>Category</th>
                 <th>Serial Number</th>
+                <th>Total Quantity</th>
+                <th>Checked Out</th>
+                <th>Available</th>
                 <th>Condition</th>
                 <th>Location</th>
-                <th>Status</th>
+                <th>Availability Status</th>
                 <th>Actions</th>
             </tr>
         </thead>
@@ -143,6 +146,12 @@
                 <td>{{ item.category }}</td>
 
                 <td>{{ item.serial_number }}</td>
+
+                <td>{{ item.quantity }}</td>
+
+                <td>{{ item.checked_out_quantity }}</td>
+
+                <td>{{ item.available_quantity }}</td>
 
                 <td>
                     {% if item.condition == "Excellent" %}
@@ -170,14 +179,32 @@
                 <td>{{ item.location }}</td>
 
                 <td>
-                    <span class="badge">
-                        {{ item.status or "Available" }}
-                    </span>
+                    {% if item.availability_status == "Available" %}
+                        <span class="badge status-available">
+                            Available
+                        </span>
+
+                    {% elif item.availability_status == "Partially Checked Out" %}
+                        <span class="badge status-partial">
+                            Partially Checked Out
+                        </span>
+
+                    {% elif item.availability_status == "Checked Out" %}
+                        <span class="badge status-checkedout">
+                            Checked Out
+                        </span>
+
+                    {% else %}
+                        <span class="badge condition-repair">
+                            Out of Service
+                        </span>
+                    {% endif %}
                 </td>
 
                 <td class="actions">
 
-                    <a href="{{ url_for('edit', i=item.id) }}" class="btn btn-small">
+                    href="{{ url_for('edit', i=item.id) }}"
+                       class="btn btn-small">
                         Edit
                     </a>
 

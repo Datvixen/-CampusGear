@@ -357,6 +357,11 @@ textarea {
     color: #166534;
 }
 
+.status-partial {
+    background: #fef3c7;
+    color: #92400e;
+}
+
 .status-checkedout {
     background: #dbeafe;
     color: #1e40af;
