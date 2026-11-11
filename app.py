@@ -18,6 +18,9 @@ def init_db():
  if c.execute("SELECT COUNT(*) FROM equipment").fetchone()[0]==0:
   c.executemany("INSERT INTO equipment(asset_tag,name,category,serial_number,quantity,condition,location,notes) VALUES(?,?,?,?,?,?,?,?)",[("CG-1001","Dell Latitude 5440","Laptop","DL5440-01",8,"Good","IT Department","Student loaner laptops"),("CG-1002","Apple iPad","Tablet","IPAD-22",6,"Good","Library","General checkout"),("CG-1003","Canon EOS Camera","Camera","CAN-401",4,"Fair","Media Lab","Media production"),("CG-1004","Epson Projector","Projector","EP-900",3,"Good","Student Center","Presentation equipment"),("CG-1005","USB-C Charger","Charger","CHG-120",12,"Needs Repair","IT Department","Two units need inspection")])
  c.commit(); c.close()
+ 
+ init_db()
+
 @app.route("/")
 def dashboard():
  refresh_overdue_statuses()
