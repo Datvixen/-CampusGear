@@ -18,14 +18,14 @@ The application is designed to help a college or university keep track of equipm
 
 ## Team Responsibilities
 
-### Person 1 - Backend & Database Lead
+### Givon Lewis - Backend & Database Lead
 - Set up and maintain the Flask project
 - Create and manage the SQLite database and tables
 - Build Add/Edit/Delete Equipment functionality
 - Connect forms to the database
 - Help with login/authentication
 
-### Person 2 - Checkout & Dashboard Lead
+### Na'Shayla McIntosh - Checkout & Dashboard Lead
 - Build the checkout system
 - Build the return system
 - Add overdue logic
@@ -33,7 +33,7 @@ The application is designed to help a college or university keep track of equipm
 - Build dashboard totals/statistics
 - Update equipment status after checkout and return
 
-### Person 3 - Frontend, Search & Testing Lead
+### Jamila Hayes - Frontend, Search & Testing Lead
 - Build and style application pages
 - Create and improve navigation
 - Style forms and equipment tables
