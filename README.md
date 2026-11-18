@@ -17,6 +17,7 @@ The application helps colleges and universities manage equipment such as laptops
 - Track overdue equipment
 - View checkout history
 - View equipment statistics on the dashboard
+- View reports, overdue equipment, and recent checkout/return activity
 
 ## Team Contributions
 
@@ -31,13 +32,17 @@ The application helps colleges and universities manage equipment such as laptops
 - Fixed a database startup error and worked through deployment issues.
 - Deployed CampusGear on Render so the completed website could be accessed online.
 
-### Na'Shayla McIntosh – Checkout & Dashboard
+### Na'Shayla McIntosh – Checkout, Dashboard, & Reports
 
 - Worked on the equipment checkout and return systems.
 - Added functionality for tracking overdue equipment.
 - Worked on checkout history and equipment status updates.
 - Built dashboard features to display equipment totals and statistics.
 - Helped test the checkout and dashboard features.
+- Added dynamic equipment availability and status updates after checkout and return.
+- Added automated tests for checkout and dashboard functionality.
+- Built the Reports & Activity page with inventory summaries, overdue equipment, and recent checkout/return activity.
+- Helped test and fix the equipment Add/Edit workflow.
 
 ### Givon Lewis – Backend & Database
 
