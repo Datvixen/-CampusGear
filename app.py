@@ -142,5 +142,13 @@ def checkout_history():
  c.close()
  return render_template("checkout_history.html",history=history)
 @app.route("/reports")
-def reports(): return render_template("todo.html",title="Users & Reports",owner="Team Member 3",tasks=["User management","Overdue equipment","Reports/activity","Additional tests"])
+def reports():
+ refresh_overdue_statuses()
+ c=db()
+ totals=c.execute("SELECT COALESCE((SELECT SUM(quantity) FROM equipment),0) AS total_units,COALESCE((SELECT SUM(quantity) FROM checkouts WHERE return_date IS NULL),0) AS checked_out,COALESCE((SELECT SUM(quantity) FROM checkouts WHERE return_date IS NULL AND status='Overdue'),0) AS overdue,COUNT(*) AS checkout_records,COALESCE(SUM(CASE WHEN return_date IS NOT NULL THEN 1 ELSE 0 END),0) AS returned_checkouts FROM checkouts").fetchone()
+ stats={"total_units":totals["total_units"],"available":max(0,totals["total_units"]-totals["checked_out"]),"checked_out":totals["checked_out"],"overdue":totals["overdue"],"checkout_records":totals["checkout_records"],"returned_checkouts":totals["returned_checkouts"]}
+ overdue=c.execute("SELECT ch.*,COALESCE(e.name,'Removed Equipment') AS equipment_name,e.asset_tag FROM checkouts ch LEFT JOIN equipment e ON e.id=ch.equipment_id WHERE ch.return_date IS NULL AND ch.status='Overdue' ORDER BY ch.due_date,ch.id").fetchall()
+ recent=c.execute("SELECT ch.*,COALESCE(e.name,'Removed Equipment') AS equipment_name FROM checkouts ch LEFT JOIN equipment e ON e.id=ch.equipment_id ORDER BY ch.checkout_date DESC,ch.id DESC LIMIT 10").fetchall()
+ c.close()
+ return render_template("reports.html",stats=stats,overdue=overdue,recent=recent)
 if __name__=="__main__": init_db(); app.run(debug=True,host="0.0.0.0",port=5000)
