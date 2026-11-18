@@ -79,6 +79,19 @@
             </div>
 
             <div class="form-group">
+    <label for="quantity">Quantity</label>
+    <input
+        type="number"
+        id="quantity"
+        name="quantity"
+        min="1"
+        value="{{ item.quantity if item else '' }}"
+        placeholder="Enter quantity"
+        required
+    >
+</div>
+
+            <div class="form-group">
                 <label for="condition">Condition</label>
 
                 <select id="condition" name="condition" required>

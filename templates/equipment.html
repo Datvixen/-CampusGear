@@ -201,12 +201,12 @@
                     {% endif %}
                 </td>
 
-                <td class="actions">
+               <td class="actions">
 
-                    href="{{ url_for('edit', i=item.id) }}"
-                       class="btn btn-small">
-                        Edit
-                    </a>
+    <a href="{{ url_for('edit', i=item.id) }}"
+       class="btn btn-small">
+        Edit
+    </a>
 
                     <form
                         method="POST"
