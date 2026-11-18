@@ -20,21 +20,6 @@ The application helps colleges and universities manage equipment such as laptops
 
 ## Team Contributions
 
-### Givon Lewis – Backend & Database
-
-- Worked on the SQLite database and SQL code.
-- Helped organize and update the database tables.
-- Worked on the SQL statement for the checkout table.
-- Contributed to the database portion of the project.
-
-### Na'Shayla McIntosh – Checkout & Dashboard
-
-- Worked on the equipment checkout and return systems.
-- Added functionality for tracking overdue equipment.
-- Worked on checkout history and equipment status updates.
-- Built dashboard features to display equipment totals and statistics.
-- Helped test the checkout and dashboard features.
-
 ### Jamila Hayes – Website Development, Frontend, Testing & Deployment
 
 - Created the original CampusGear website and main project structure, making it easier for teammates to add their features.
@@ -45,6 +30,22 @@ The application helps colleges and universities manage equipment such as laptops
 - Set up Docker and tested the application in a container.
 - Fixed a database startup error and worked through deployment issues.
 - Deployed CampusGear on Render so the completed website could be accessed online.
+
+### Na'Shayla McIntosh – Checkout & Dashboard
+
+- Worked on the equipment checkout and return systems.
+- Added functionality for tracking overdue equipment.
+- Worked on checkout history and equipment status updates.
+- Built dashboard features to display equipment totals and statistics.
+- Helped test the checkout and dashboard features.
+
+### Givon Lewis – Backend & Database
+
+- Worked on the SQLite database and SQL code.
+- Helped organize and update the database tables.
+- Worked on the SQL statement for the checkout table.
+- Contributed to the database portion of the project.
+
 
 ## Running CampusGear
 
