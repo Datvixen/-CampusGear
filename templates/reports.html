@@ -1,0 +1,134 @@
+{% extends "base.html" %}
+
+{% block title %}Reports & Activity | CampusGear{% endblock %}
+
+{% block content %}
+<div class="page-heading">
+    <div>
+        <h2>Reports &amp; Activity</h2>
+        <p>Equipment inventory and checkout activity at a glance.</p>
+    </div>
+</div>
+
+<div class="section-heading">
+    <h3>Summary</h3>
+    <p>Current inventory and checkout totals.</p>
+</div>
+
+<div class="dashboard-grid">
+    <div class="stat-card">
+        <h3>Total Equipment Units</h3>
+        <p class="stat-number">{{ stats.total_units }}</p>
+    </div>
+    <div class="stat-card">
+        <h3>Available Units</h3>
+        <p class="stat-number">{{ stats.available }}</p>
+    </div>
+    <div class="stat-card">
+        <h3>Currently Checked Out Units</h3>
+        <p class="stat-number">{{ stats.checked_out }}</p>
+    </div>
+    <div class="stat-card">
+        <h3>Overdue Units</h3>
+        <p class="stat-number">{{ stats.overdue }}</p>
+    </div>
+    <div class="stat-card">
+        <h3>Total Checkout Records</h3>
+        <p class="stat-number">{{ stats.checkout_records }}</p>
+    </div>
+    <div class="stat-card">
+        <h3>Total Returned Checkouts</h3>
+        <p class="stat-number">{{ stats.returned_checkouts }}</p>
+    </div>
+</div>
+
+<div class="section-heading">
+    <h3>Overdue Equipment</h3>
+    <p>Active checkout records that are past their due date.</p>
+</div>
+
+<div class="table-card">
+    {% if overdue %}
+    <table class="equipment-table">
+        <thead>
+            <tr>
+                <th>Equipment</th>
+                <th>Asset Tag</th>
+                <th>Borrower</th>
+                <th>Email</th>
+                <th>Quantity</th>
+                <th>Checkout Date</th>
+                <th>Due Date</th>
+                <th>Status</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for checkout in overdue %}
+            <tr>
+                <td>{{ checkout.equipment_name }}</td>
+                <td>{{ checkout.asset_tag or "-" }}</td>
+                <td>{{ checkout.borrower_name }}</td>
+                <td>{{ checkout.borrower_email }}</td>
+                <td>{{ checkout.quantity }}</td>
+                <td>{{ checkout.checkout_date }}</td>
+                <td>{{ checkout.due_date }}</td>
+                <td><span class="badge status-overdue">{{ checkout.status }}</span></td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+    <div class="empty-state">
+        <h3>No overdue equipment</h3>
+        <p>There are no active overdue checkouts.</p>
+    </div>
+    {% endif %}
+</div>
+
+<div class="section-heading">
+    <h3>Recent Activity</h3>
+    <p>The 10 most recent checkout records.</p>
+</div>
+
+<div class="table-card">
+    {% if recent %}
+    <table class="equipment-table">
+        <thead>
+            <tr>
+                <th>Equipment</th>
+                <th>Borrower</th>
+                <th>Quantity</th>
+                <th>Checkout Date</th>
+                <th>Return Date</th>
+                <th>Status</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for checkout in recent %}
+            <tr>
+                <td>{{ checkout.equipment_name }}</td>
+                <td>{{ checkout.borrower_name }}</td>
+                <td>{{ checkout.quantity }}</td>
+                <td>{{ checkout.checkout_date }}</td>
+                <td>{{ checkout.return_date or "Not returned" }}</td>
+                <td>
+                    {% if checkout.status == "Overdue" %}
+                    <span class="badge status-overdue">{{ checkout.status }}</span>
+                    {% elif checkout.status == "Checked Out" %}
+                    <span class="badge status-checkedout">{{ checkout.status }}</span>
+                    {% else %}
+                    <span class="badge">{{ checkout.status }}</span>
+                    {% endif %}
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+    <div class="empty-state">
+        <h3>No checkout records</h3>
+        <p>Checkout and return records will appear here.</p>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}
